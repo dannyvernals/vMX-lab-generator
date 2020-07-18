@@ -1,0 +1,62 @@
+---
+# Need to work out how to make this playbook idempotent
+- name: Bin the VNFs
+  hosts: kvm-hosts
+  gather_facts: no
+  tasks:
+  - name: Load the Variables
+    include_vars:
+      file: yml_out/kvm.yml
+  - name: Stop RE
+    virt:
+      name: '{{ item.name }}'
+      state: shutdown
+      #command: destroy
+    with_items: '{{ res }}'
+  - name: Stop PFE
+    virt:
+        name: '{{ item.name }}'
+        state: shutdown
+        #command: destroy
+    with_items: '{{ pfes }}'
+  - name: Delete RE
+    virt:
+        name: '{{ item.name }}'
+        command: undefine
+    with_items: '{{ res }}'
+  - name: Delete PFE
+    virt:
+        name: '{{ item.name }}'
+        command: undefine
+    with_items: '{{ pfes }}'
+- name: Remove Virtual Networks
+  gather_facts: no
+  hosts: kvm-hosts
+  tasks:
+  - name: Load the Variables
+    include_vars:
+      file: yml_out/kvm.yml
+  - name: Get current VNETs
+    virt_net:
+      command: list_nets
+    register: response
+  - name: Print VNETS
+    debug:
+      msg: "{{ response.list_nets }}"
+  - name: Shutdown Virtual Networks
+    virt_net:
+      state: inactive
+      name: '{{ item }}' 
+    with_items: '{{ vnets }}'
+  - name: Undefine Virtual Networks
+    virt_net:
+      command: undefine
+      name: '{{ item }}'
+    with_items: '{{ vnets }}'
+  - name: Get current VNETs
+    virt_net:
+      command: list_nets
+    register: response
+  - name: Print VNETS
+    debug:
+      msg: "{{ response.list_nets }}"

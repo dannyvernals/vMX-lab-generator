@@ -1,0 +1,22 @@
+---
+# tasks file for LSYS
+- name: Load the Router Specific Variables
+  include_vars:
+    file: yml_out/routers.yml
+    name: systems
+- name: debug
+  debug:
+    msg: '{{ user }}'
+- name: Build the LSYS Config
+  template: src=lsys/templates/logical_systems.j2 dest={{ build_dir }}/{{ inventory_hostname }}/logical_systems.conf
+- name: Assemble the Config Fragments
+  assemble:
+    src: "{{ build_dir }}/{{ inventory_hostname }}"
+    dest: "{{ out_dir }}/{{ inventory_hostname }}.conf"
+- name: Push the Finished Config
+  connection: local
+  juniper_junos_config:
+    load: override
+    user: "{{ user }}"
+    src: "{{ out_dir }}/{{ inventory_hostname }}.conf"
+

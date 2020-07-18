@@ -1,0 +1,69 @@
+system {
+    host-name {{ inventory_hostname }};
+    root-authentication {
+        encrypted-password "{{ netconf_encrypted }}"; ## SECRET-DATA
+    }
+    login {
+        user netconf {
+            uid 2007;
+            class super-user;
+            authentication {
+                encrypted-password "{{ netconf_encrypted }}"; ## SECRET-DATA
+                ssh-rsa "{{ netconf_key }}"; ## SECRET-DATA
+            }
+        }
+    }
+    services {
+        ssh;
+        netconf {
+            ssh;
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+}
+chassis {
+    fpc 0 {
+        pic 0 { 
+            tunnel-services;
+        }
+        lite-mode;
+    }
+}
+interfaces {
+    fxp0 {
+        unit 0 {
+            family inet {
+                address {{ management.ip_address }}/{{ management.CIDR}};
+            }
+        }
+    }
+}
+routing-options {
+    static {
+        route 0.0.0.0/0 {
+            next-hop {{ management.def_gw }};
+            no-readvertise;
+        }
+    }
+    forwarding-table {
+        export per-packet;
+    }
+}
+policy-options {
+    policy-statement per-packet {
+        then {
+            load-balance per-packet;
+        }                               
+    }
+}

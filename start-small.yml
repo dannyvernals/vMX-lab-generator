@@ -1,0 +1,36 @@
+---
+# vMX resourcing
+vmx_resources:
+  images_location: '/home/danny/vm-shared-disk/script_clones/lab_generator/images'
+  build_images_location: '/home/danny/vm-shared-disk/script_clones/lab_generator/build_images'
+  re_disk_0: 'junos-vmx-x86-64-18.1R2.5.qcow2' 
+  re_disk_1: 'vmxhdd.img'
+  re_disk_2: 'metadata-usb-re.img'
+  pfe_disk_0: 'vFPC-20180420.img'
+  re_cores: 1
+  pfe_cores: 4
+  re_mem: 2000   # (MiB)
+  pfe_mem: 8000
+  console_port_start: 8600     # All VCPs and VFPs console ports are numbered starting here
+
+# Network Design
+type: kvm   # lsys, vmm or kvm
+management_network: 172.12.1.0/24 # Connects fxp0s to the host via fxp-net bridge
+ipv4_loopback_pool: 192.168.1.0/24
+ipv4_p2p_pool: 10.0.1.0/24
+ipv6: yes 
+ipv6_loopback_pool: 2001:db8:1::/48
+ipv6_p2p_pool: 2001:db8:2::/48
+igp: isis    # ospf or isis
+mpls: rsvp   # no, rsvp or ldp
+local_as: 65000
+links:
+  internal:
+  - [R1, R2]
+ibgp:
+  type: full_mesh
+  routers: [R1, R2]
+  # type: rr
+  # rrs: [R1, R2]
+  # rrc: [R3, R6, R7]
+ebgp:

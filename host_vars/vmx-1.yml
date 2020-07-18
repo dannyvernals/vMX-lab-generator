@@ -1,0 +1,9 @@
+---
+host_name: vmx-1
+console:
+  ip_address: 127.0.0.1
+  port: 8601
+management:
+  ip_address: 172.12.1.2
+  def_gw: 172.12.1.1
+  CIDR: 24

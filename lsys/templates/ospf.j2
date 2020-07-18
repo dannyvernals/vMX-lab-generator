@@ -1,0 +1,9 @@
+            ospf {
+                area 0.0.0.0 { 
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+                    interface {{ interface.local_int }};
+{% endif %}{% endfor %}
+                    interface lo0.{{ systems[system].host_id }}
+                }
+            }
+

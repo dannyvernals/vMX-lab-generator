@@ -1,0 +1,5 @@
+<network>
+  <name>pri-ext-vnet3</name>
+  <domain name='pri-ext-vnet3'/>
+  <bridge name='pri-ext-vnet3' stp='on' delay='0'/>
+</network>

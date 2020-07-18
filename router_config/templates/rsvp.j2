@@ -1,0 +1,16 @@
+    rsvp {
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+        interface {{ interface.local_int }};
+{% endif %}{% endfor %}
+    }
+    mpls {
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+        interface {{ interface.local_int }};
+{% endif %}{% endfor %}
+{% for lsp in systems[system].lsps %}
+        label-switched-path {{ system }}-TO-{{ lsp.router }} {
+            to {{ lsp.ip }};
+        }
+{% endfor %}
+    }
+

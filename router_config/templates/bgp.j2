@@ -1,0 +1,61 @@
+    bgp {
+{% if systems[system].ibgp %}
+        group IBGP {
+            type internal;
+            local-address {{ systems[system].ipv4_loopback.split('/')[0] }};
+            export NHS;
+{% for neighbour in systems[system].ibgp %}
+            neighbor {{ neighbour.ip }} { 
+                description {{ neighbour.router }};
+{% if neighbour.type == 'rrc' %}
+                cluster {{ systems[system].ipv4_loopback.split('/')[0] }};
+{% endif %}
+            }
+{% endfor %}
+    }
+{% endif %}{% if 'ibgp_v6 ' in systems[system] %}
+        group IBGP-V6 {
+            type internal;
+            local-address {{ systems[system].ipv6_loopback.split('/')[0] }};
+            export NHS;
+{% for neighbour in systems[system].ibgp_v6 %}
+            neighbor {{ neighbour.ip }} {
+                description {{ neighbour.router }};
+{% if neighbour.type == 'rrc' %}
+                cluster {{ systems[system].ipv6_loopback.split('/')[0] }};
+{% endif %}
+            }
+{% endfor %}
+        }
+{% endif %}{% if 'ebgp' in systems[system] %}
+        group EBGP {
+            type external;
+{% if systems[system].ibgp %}
+            export ADV-LOOPBACKS;
+{% else %}
+            export ADV-LOCAL;
+{% endif %}
+{% for neighbour in systems[system].ebgp %}
+            neighbor {{ neighbour.ip }} { 
+                description {{ neighbour.router }};
+                peer-as {{ neighbour.asn }};
+            }
+{% endfor %}
+        }
+{% endif %}{% if 'ebgp_v6' in systems[system] %}
+        group EBGP-V6 {
+            type external;
+{% if systems[system].ibgp_v6 %}
+            export ADV-LOOPBACKS;
+{% else %}
+            export ADV-LOCAL;
+{% endif %}
+{% for neighbour in systems[system].ebgp_v6 %}
+            neighbor {{ neighbour.ip }} {
+                description {{ neighbour.router }};
+                peer-as {{ neighbour.asn }};
+            }
+{% endfor %}
+        }
+{% endif %}
+    }

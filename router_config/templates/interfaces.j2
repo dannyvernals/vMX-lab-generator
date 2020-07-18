@@ -1,0 +1,44 @@
+interfaces {
+{% for interface in systems[system].links %}
+    {{ interface.local_int.split('.')[0] }} {
+        unit {{ interface.local_int.split('.')[1] }} {
+            encapsulation ethernet;
+            description {{ system }}-{{ interface.remote_rtr }}
+            peer-unit {{ interface.remote_int.split('.')[1] }};
+            family inet { 
+                address {{ interface.local_ip }};
+            }
+{% if systems[system].mpls != 'no' %}
+            family mpls;
+{% endif %}
+{% if systems[system].igp == 'isis' %}
+            family iso;
+{% endif %}
+{% if 'ipv6_loopback' in systems[system] %}
+            family inet6 {
+                address {{ interface.local_ipv6 }};
+            }
+{% endif %}
+        }                
+{% endfor %}
+    }
+    lo0 {
+        unit {{ systems[system].host_id }} {
+            description {{ system }}-Loopback;
+            family inet {
+                address {{ systems[system].ipv4_loopback }};
+            }
+{% if 'ipv6_loopback' in systems[system] %}
+            family inet6 {
+                address {{ systems[system].ipv6_loopback }};
+            }
+{% endif %}
+{% if systems[system].igp == 'isis' %}
+            family iso {
+                address 49.0001.0000.{{ systems[system].ipv4_hex_loopback }}.00;
+            }
+{% endif %}
+        }
+    }
+}
+

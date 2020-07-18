@@ -1,0 +1,75 @@
+---
+- name: Create Virtual Networks
+  hosts: kvm-hosts
+  gather_facts: no
+  tasks:
+  - name: Load the Variables
+    include_vars:
+      file: yml_out/kvm.yml
+  - name: Get current VNETs
+    virt_net:
+      command: list_nets
+    register: response
+  - name: Print VNETS
+    debug:
+      msg: "{{ response.list_nets }}"
+  - name: Create Virtual Networks
+    virt_net:
+      command: define
+      name: '{{ item }}' 
+      xml: "{{ lookup('template', 'kvm/templates/libvirt-net.xml.j2') }}"
+    with_items: '{{ vnets }}'
+  - name: Activate Virtual Networks
+    virt_net:
+      state: active
+      name: '{{ item }}'
+    with_items: '{{ vnets }}'
+  - name: Get latest VNETs
+    virt_net:
+      command: list_nets
+    register: response
+  - name: Print VNETS
+    debug:
+      msg: "{{ response.list_nets }}"
+- name: Spawn the VNFs
+  hosts: kvm-hosts
+  gather_facts: no
+  tasks:
+  - name: Create Image Build DIR
+    file:
+      path: "{{ build_images_location }}"
+      state: directory
+  - name: Create image DIRs
+    file:
+      path: "{{ build_images_location }}/{{ item.name | replace('-vcp', '')}}"
+      state: directory
+    with_items: '{{ res }}'
+  - name: Copy Image files
+  # Need to make the images qcow backing to save disk space at some point
+    copy:
+      src: "{{ images_location }}/"
+      dest: "{{ build_images_location }}/{{ item.name | replace('-vcp', '')}}"
+      force: no
+    with_items: '{{ res }}'
+  - name: Define REs
+    virt:
+        name: '{{ item.name }}'
+        command: define
+        xml: "{{ lookup('template', 'kvm/templates/vcp.xml.j2') }}"
+    with_items: '{{ res }}'
+  - name: Launch REs
+    virt:
+        name: '{{ item.name }}'
+        state: running
+    with_items: '{{ res }}'
+  - name: Define PFE
+    virt:
+        name: '{{ item.name }}'
+        command: define
+        xml: "{{ lookup('template', 'kvm/templates/vfp.xml.j2') }}"
+    with_items: '{{ pfes }}'
+  - name: Launch PFE
+    virt:
+        name: '{{ item.name }}'
+        state: running
+    with_items: '{{ pfes }}'

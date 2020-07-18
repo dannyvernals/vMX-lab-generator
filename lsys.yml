@@ -1,0 +1,23 @@
+---
+- name: Initial Housekeeping 
+  hosts: all_virts
+  gather_facts: no
+  tasks:
+  - name: Create Build DIR    
+    file:
+      path: "{{ build_dir }}"
+      state: directory
+  - name: Create Device DIR
+    file:
+      path: "{{ build_dir }}/{{ inventory_hostname }}"
+      state: directory
+- name: Generate Base Config, and Push Via OOB if Needed
+  hosts: all_virts
+  gather_facts: no
+  roles:
+    - noob
+- name: Generate and Push Shared Config
+  hosts: all_virts
+  gather_facts: no
+  roles:
+    - lsys 

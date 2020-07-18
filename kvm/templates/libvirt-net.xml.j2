@@ -1,0 +1,12 @@
+<network>
+  <name>{{ item }}</name>
+  <domain name='{{ item }}'/>
+  <bridge name='{{ item }}' stp='on' delay='0'/>
+{% if item in vnets_ips %}
+  <ip address='{{ vnets_ips[item].ip_addr }}' netmask='{{ vnets_ips[item].mask }}'>
+    <dhcp>
+      <range start='{{ vnets_ips[item].range_st }}' end='{{ vnets_ips[item].range_end }}' />
+    </dhcp>
+  </ip>
+{% endif %}
+</network>

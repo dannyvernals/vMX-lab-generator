@@ -1,0 +1,11 @@
+            ldp {
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+                interface {{ interface.local_int }};
+{% endif %}{% endfor %}
+            }
+            mpls {
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+                interface {{ interface.local_int }};
+{% endif %}{% endfor %}
+            }
+

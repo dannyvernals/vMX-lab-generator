@@ -1,0 +1,12 @@
+    isis {
+        level 1 disable;
+        level 2 wide-metrics-only;
+{% for interface in systems[system].links %}{% if interface.type == 'internal' %}
+        interface {{ interface.local_int }} {
+            level 1 disable;
+            point-to-point;
+        }
+{% endif %}{% endfor %}
+        interface lo0.{{ systems[system].host_id }}
+    }
+

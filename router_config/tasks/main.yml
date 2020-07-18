@@ -1,0 +1,16 @@
+---
+# tasks file for router-config
+- name: Load the Router Specific Junos Config Variables
+  include_vars:
+    file: yml_out/routers.yml
+    name: systems
+- name: Create router Directories
+  file:
+    path: "{{ build_dir }}/{{ host }}"
+    state: directory
+#- name: Build the Router Configs
+#  template: src=router_config/templates/main_template.j2 dest={{ build_dir }}/{{ item }}/main.conf
+#- name: Assemble the Config Fragments
+#  assemble:
+#    src: "{{ build_dir }}/{{ inventory_hostname }}"
+#    dest: "{{ out_dir }}/{{ inventory_hostname }}.conf"

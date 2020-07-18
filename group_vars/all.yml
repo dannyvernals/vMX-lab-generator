@@ -1,0 +1,9 @@
+build_dir: build_files
+out_dir: config_out
+log_dir: logs
+user: netconf
+ansible_ssh_private_key_file: netconf_ssh_key
+ansible_connection: local
+netconf_encrypted: "$6$zqBFhxoo$Wjx4CVmi4L4nwgQkd928kCVYAM7d6L6oNloID3G33u9tMb6dDxzNkk3ZKweGpGZV/kw7nvXH3xQbC.xVkPNzW."
+netconf_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClAM3Aqob27CfxkzrEv7m/tYSLEsVjdtfz5kge84WJXpXS+9Hcuho5nP5D0+5quDqxtsH4RKvlgwvVwHucUb7PJ8SQCPF4IJUcGWh2N8oikRRzp01Jlp70vtN2rwhL+hNbfq4YTyllyXCEGtNz7FOd04uuwg6UJNGcOzhS6qH9z0bVt1buqyAZNfTRrLcY8LIOrqm0UlMHrF5B+WUDi716YcF9C0k6rfV1bfkSJ9RZFnM/ImGslN1n26N9ADMmTkEWWKjduAMrOnXirQ+4AQbuBQTuHsureDbiGUGW/eBFtyIpLbqia9XMgt5jWYqDIeiEtx5O/yToxwBTPEzrfL41 netconf@netconf.test" 
+

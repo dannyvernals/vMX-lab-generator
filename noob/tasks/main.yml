@@ -1,0 +1,20 @@
+---
+# tasks file for noob
+- name: Build NOOB config files
+  template: src=noob/templates/noob.j2 dest={{ build_dir }}/{{ inventory_hostname }}/noob.conf
+- name: Check IP Connectivity
+  wait_for: host={{ management.ip_address }} port=22 timeout=10
+  register: ip_result
+  ignore_errors: True
+- name: Upload NOOB config (only if there is no IP connectivity)
+  when: ip_result is failed
+  juniper_junos_config:
+    load: override
+    mode: telnet
+    # user: root
+    user: netconf
+    password: netconf123
+    host: "{{ console.ip_address }}"
+    port: "{{ console.port }}"
+    src: "{{ build_dir }}/{{ inventory_hostname }}/noob.conf"
+    logfile: "{{ log_dir }}/{{ inventory_hostname }}.log"

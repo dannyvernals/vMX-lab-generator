@@ -1,0 +1,47 @@
+routing-options { 
+    autonomous-system {{ systems[system].local_as }};
+    router-id {{ systems[system].ipv4_loopback.split('/')[0] }};
+}
+{% include 'router_config/templates/interfaces.j2' ignore missing %}
+protocols {
+{% if systems[system].ibgp %}{% if systems[system].igp == 'ospf' %}
+{% include 'router_config/templates/ospf.j2' ignore missing %}
+{% elif systems[system].igp == 'isis' %}
+{% include 'router_config/templates/isis.j2' ignore missing %}
+{% endif %}
+{% if systems[system].mpls == 'rsvp' %}
+{% include 'router_config/templates/rsvp.j2' ignore missing %}
+{% elif systems[system].mpls == 'ldp' %}
+{% include 'router_config/templates/ldp.j2' ignore missing %}
+{% endif %}
+{% endif %}
+{% include 'router_config/templates/bgp.j2' ignore missing %}
+}
+policy-options {
+    policy-statement NHS {
+        from {
+            protocol bgp;
+            route-type external;
+        }
+        then {
+            next-hop self;
+        }
+    }
+    policy-statement ADV-LOCAL {   
+        from protocol [ local direct ];
+        then accept;            
+    }
+    policy-statement REJECT-ALL {
+        then reject;
+    }
+    policy-statement ADV-LOOPBACKS {
+        term 1 {
+            from {
+                protocol [ direct local isis ospf ];
+                route-filter 192.168.1.0/24 orlonger;
+            }
+            then accept;
+        }
+    }                           
+}
+
